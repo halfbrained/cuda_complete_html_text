@@ -14,7 +14,7 @@ option_min_len = max(1, int(ini_read(fn_config, section, 'min_len', '3')))
 option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 
-pattern_tag_content = '(?<=>)[^<](?=<)'
+pattern_tag_content = '(?<=>)[^<]+(?=<)'
 pattern_word = '[\d\w]{{{},}}'.format(option_min_len)
 pattern_word_c = re.compile(pattern_word)
 
@@ -104,13 +104,14 @@ class Command:
 
         self.words = words
 
+        #print('word:', word)
+        #print('list:', words)
+
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
                  and w!=word1
                  and w!=(word1+word2)
                  ]
-        #print('word:', word)
-        #print('list:', words)
 
         ed_self.complete('\n'.join(words), len(word1), len(word2))
         return True
