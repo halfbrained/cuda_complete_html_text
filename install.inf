@@ -1,0 +1,18 @@
+[info]
+title=Complete Html Text
+desc=Handles auto-completion command (Ctrl+Space) and gives list of words from the current html document, starting from the currently typed word.
+type=cudatext-plugin
+subdir=cuda_complete_html_text
+lexers=regex:HTML.*
+homepage=https://github.com/halfbrained/cuda_complete_html_text
+api=1.0.318
+
+[item1]
+section=events
+events=on_complete+
+
+[item100]
+section=commands
+caption=Complete Html Text\Config
+method=config
+menu=o
