@@ -17,7 +17,7 @@ option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 
 pattern_tag_content = '(?<=>)[^<]+(?=<)'
-pattern_word = '[\d\w]{{{},}}'.format(option_min_len)
+pattern_word = '\w{{{},}}'.format(option_min_len)
 pattern_word_c = re.compile(pattern_word)
 pattern_gtlt_c = re.compile('[><]')
 
