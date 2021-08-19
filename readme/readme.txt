@@ -1,5 +1,13 @@
 Plugin for CudaText.
-Handles auto-completion command (Ctrl+Space) for HTML documents, only for plain text parts of the document (not for HTML tags/attributes)
+Handles auto-completion command (Ctrl+Space) for HTML documents:
+- inside plain text parts of HTML document, ie ouf of <...> brackets
+- inside HTML comments (note: this needs CudaText 1.141.6+)
+
+Plugin is bound to lexer names which contain "HTML" at beginning, ie it should
+work for all "HTMLxxxx" lexers.
+
+Plugin should not interfere with built-in HTML auto-completion, and not interfere
+with plugin "Complete From Text" (which didn't work in HTML anyway).
 
 
 Plugin has options in the config file, call menu item "Options / Settings-plugins / Complete HTML Text".
@@ -11,7 +19,6 @@ Options are:
 
 
 Authors: 
-    Alexey Torgashin (CudaText)
-    halfbrained      (https://github.com/halfbrained)
-
+- Alexey Torgashin (CudaText)
+- halfbrained (https://github.com/halfbrained)
 License: MIT
