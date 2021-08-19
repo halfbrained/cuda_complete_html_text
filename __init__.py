@@ -2,6 +2,9 @@ import os
 import re
 from cudatext import *
 
+
+LOG = False
+
 fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
 section = 'complete_html_text'
 prefix = 'html text'
@@ -9,7 +12,6 @@ prefix = 'html text'
 def bool_to_str(v): return '1' if v else '0'
 def str_to_bool(s): return s=='1'
 
-# '-' here is none-lexer
 option_min_len = max(1, int(ini_read(fn_config, section, 'min_len', '3')))
 option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
@@ -17,6 +19,7 @@ option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 pattern_tag_content = '(?<=>)[^<]+(?=<)'
 pattern_word = '[\d\w]{{{},}}'.format(option_min_len)
 pattern_word_c = re.compile(pattern_word)
+pattern_gtlt_c = re.compile('[><]')
 
 
 def is_text_with_begin(s, begin):
@@ -68,17 +71,27 @@ def validate_caret_pos(edt, x, y):
         return True     # caret in comment
 
     # verify caret inside >...<
-    opts = 'rf' # regex + from caret
-    res = ed.action(EDACTION_FIND_ONE, '[><]', opts)
-    if res is None:     # no <>
-        return False
-    if ed.get_text_substr(*res) != '<':     # next should be  <, not >
-        return False
-    opts += 'b' # now search back for >
-    res = ed.action(EDACTION_FIND_ONE, '[><]', opts)
-    if res is None:     # no <>
-        return False
-    return ed.get_text_substr(*res) == '>'
+    for nline in range(y, ed.get_line_count()):     # search forward for <
+        s = edt.get_text_line(nline)
+        pos = x  if nline == y else  0
+        m = pattern_gtlt_c.search(s, pos)
+        if m:
+            if m[0] != '<':
+                #pass;       LOG and print(f' -- validate 0: wrong match: <? {m[0]!r} @{m.start(), nline}')
+                return False
+            break
+
+    for nline in range(y, -1, -1):     # search backward for >
+        s = edt.get_text_line(nline)
+        s = s[::-1]
+        pos = len(s)-x  if nline == y else  0
+        m = pattern_gtlt_c.search(s, pos)
+        if m:
+            #pass;       LOG and print(f' -- validate 1: match: >? {m[0]!r} @{m.start(), nline}')
+            return m[0] == '>'
+    #end for
+    #pass;       LOG and print(f' -- validate 2: NO match')
+    return False
 
 
 class Command:
@@ -90,7 +103,6 @@ class Command:
         if y1>=0: return    # don't allow selection
         if not validate_caret_pos(ed_self, x0, y0): return   # check if caret in tag text  OR  comment
 
-
         # word to complete
         word = get_word(x0, y0)
         if not word:    return
@@ -101,11 +113,8 @@ class Command:
         if not words:   return
 
         words.sort(key=lambda w: w.lower())
-
-        self.words = words
-
-        #print('word:', word)
-        #print('list:', words)
+        #pass;      LOG and print('word:', word)
+        #pass;      LOG and print('list:', words)
 
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
