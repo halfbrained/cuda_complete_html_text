@@ -9,7 +9,6 @@ api=1.0.318
 [item1]
 section=events
 lexers=regex:HTML.*
-lexers=$lexers
 events=on_complete+
 
 [item100]
