@@ -19,6 +19,7 @@ option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 pattern_tag_content = '(?<=>)[^<]+(?=<)'
 pattern_word = '\w{{{},}}'.format(option_min_len)
 pattern_word_c = re.compile(pattern_word)
+pattern_word_start_c = re.compile('^\w*')
 pattern_gtlt_c = re.compile('[><]')
 
 
@@ -53,10 +54,10 @@ def get_word(x, y):
         return
 
     _ltext_rv = s[:x][::-1]
-    m = re.search('[\w\d]+', _ltext_rv)
+    m = pattern_word_start_c.search(_ltext_rv)
     x0 = x-m.end()  if m else  x
 
-    m = re.search('[\w\d]+', s[x:])
+    m = pattern_word_start_c.search(s[x:])
     x1 = x+m.end()  if m else  x
 
     text1 = s[x0:x]
@@ -105,12 +106,14 @@ class Command:
 
         # word to complete
         word = get_word(x0, y0)
+        print(f' -- word: {word}')
         if not word:    return
         word1, word2 = word
         if not word1:   return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
         words = get_words_list(ed_self)
         if not words:   return
+        print(f' -- words : {len(words)}')
 
         words.sort(key=lambda w: w.lower())
         #pass;      LOG and print('word:', word)
