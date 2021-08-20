@@ -1,6 +1,6 @@
 Plugin for CudaText.
 Handles auto-completion command (Ctrl+Space) for HTML documents:
-- inside plain text parts of HTML document, ie ouf of <...> brackets
+- inside plain text parts of HTML document, ie out of <...> brackets
 - inside HTML comments (note: this needs CudaText 1.141.6+)
 
 Plugin is bound to lexer names which contain "HTML" at beginning, ie it should
