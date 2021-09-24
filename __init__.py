@@ -102,6 +102,11 @@ class Command:
         if len(carets)!=1: return   # no multicaret
         x0, y0, x1, y1 = carets[0]
         if y1>=0: return    # don't allow selection
+
+        # don't work inside CSS/PHP blocks
+        lex = ed_self.get_prop(PROP_LEXER_CARET)
+        if not 'HTML' in lex: return
+
         if not validate_caret_pos(ed_self, x0, y0): return   # check if caret in tag text  OR  comment
 
         # word to complete
